@@ -5,14 +5,15 @@
   "main": "./index.js",
   "types": "./main.d.ts",
   "license": "Proprietary",
-  "repository": "https://github.com/nordicbraintech/react-native-msal",
+  "repository": "https://github.com/involv-intranet/react-native-msal",
   "private": true,
   "scripts": {
     "lint": "eslint src --ext .ts,.tsx",
     "lint:fix": "npm run lint --fix",
     "test": "npm run lint",
     "prettier": "prettier --ignore-path .gitignore --no-config --write 'src/*.ts?(x)'",
-    "build": "tsc"
+    "build": "tsc",
+    "build:plugin": "tsc -p tsconfig.plugin.json"
   },
   "keywords": [
     "react-native",
@@ -27,7 +28,7 @@
   "author": "Athul Mithran, Stefan Borg, Marcus Engebretsen",
   "dependencies": {
     "@azure/msal-browser": "^2.1.0",
-    "@expo/config-plugins": "^4.0.6"
+    "@expo/config-plugins": "^8.0.7"
   },
   "devDependencies": {
     "@commitlint/cli": "^16.1.0",
@@ -39,6 +40,7 @@
     "eslint": "^7.26.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",
+    "expo-module-scripts": "^3.5.2",
     "gh-pages": "^3.1.0",
     "husky": "^7.0.0",
     "jest": "^27.0.6",
@@ -47,7 +49,7 @@
     "react": "^17.0.2",
     "react-native": "^0.64.1",
     "semantic-release": "^19.0.2",
-    "typescript": "^4.2.4"
+    "typescript": "^5.5.3"
   },
   "peerDependencies": {
     "react": "*",
