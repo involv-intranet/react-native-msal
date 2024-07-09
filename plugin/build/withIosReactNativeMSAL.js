@@ -26,7 +26,7 @@ const withIosKeychainGroup = (config) => {
 };
 const withAppDelegateConfig = (config) => {
     return (0, config_plugins_1.withAppDelegate)(config, (mod) => {
-        if (mod.modResults.language === 'objc') {
+        if (mod.modResults.language === 'objcpp') {
             mod.modResults.contents = setAppDelegate(mod.modResults.contents);
         }
         else {
@@ -40,16 +40,21 @@ function setAppDelegate(appDelegate) {
         const [firstLine, ...restOfLines] = appDelegate.split('\n');
         appDelegate = firstLine + '\n\n#import <MSAL/MSAL.h>\n' + restOfLines.join('\n');
     }
-    const msalHandleResponseMethod = '[MSALPublicClientApplication handleMSALResponse:url sourceApplication:options[UIApplicationOpenURLOptionsSourceApplicationKey]]';
-    if (appDelegate.includes(msalHandleResponseMethod)) {
-        return appDelegate;
+
+    const linkingApiOriginal = `- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {`;
+    const linkingApiChange = `- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<NSString *,id> *)options {`
+
+    const linkingApiReturnOriginal = `return [super application:application openURL:url options:options] || [RCTLinkingManager application:application openURL:url options:options];`;
+    const linkingApiReturnChange = `return [MSALPublicClientApplication handleMSALResponse:url sourceApplication:options[UIApplicationOpenURLOptionsSourceApplicationKey]];`;
+
+    if (appDelegate.includes(linkingApiOriginal)) {
+        appDelegate = appDelegate.replace(linkingApiOriginal, linkingApiChange);
     }
-    const linkingMethodReturn = 'return [RCTLinkingManager application:application openURL:url options:options];';
-    const newReturn = `if ([MSALPublicClientApplication handleMSALResponse:url sourceApplication:options[UIApplicationOpenURLOptionsSourceApplicationKey]]) {
-    return true;
-  }
-  ${linkingMethodReturn}`;
-    appDelegate = appDelegate.replace(linkingMethodReturn, newReturn);
+
+    if (appDelegate.includes(linkingApiReturnOriginal)) {
+        appDelegate = appDelegate.replace(linkingApiReturnOriginal, linkingApiReturnChange);
+    }
+
     return appDelegate;
 }
 const withIosReactNativeMSAL = (config) => {
